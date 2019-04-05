@@ -17,7 +17,7 @@ document.addEventListener('keydown', event => {
       playerMove(0);
       break;
     case 32:
-      console.log("32 - Space")
+      playerFall();
       break;
     case 27:
       console.log("27 - Escape")

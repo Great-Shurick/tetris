@@ -99,7 +99,9 @@ function playerDrop(){
     playerReset();
     arenaSweep();
     updateScore(player.score);
+    return 0;
   }
+  return 1;
 }
 
 
@@ -126,6 +128,15 @@ function playerRotate(dir = 1){
       player.pos.x = pos;
       return;
 
+    }
+  }
+}
+
+
+function playerFall(){
+  while(true){
+    if(playerDrop()==0){
+      return;
     }
   }
 }
