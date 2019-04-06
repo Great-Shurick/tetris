@@ -2,10 +2,12 @@ const canvasTetris = document.getElementById('tetris');
 const contextTetris = canvasTetris.getContext('2d');
 const canvasNext = document.getElementById('next');
 const contextNext = canvasNext.getContext('2d');
+var canvasScore = document.getElementById("scoreTable");
+var contextScore = canvasScore.getContext("2d");
 
 contextTetris.scale(40, 40);
 contextNext.scale(50,50);
-
+clearScoreTable();
 
 const colors = [
   null,
@@ -26,12 +28,39 @@ function draw(){
 }
 
 
+function gameOverDialog(){
+  var name = prompt("Введите свой ник","");
+  if (name != null) {
+    return(name);
+  }
+}
+
+
 function clearCanvas(){
   contextTetris.fillStyle = '#000';
   contextTetris.fillRect(0, 0, canvasTetris.width, canvasTetris.height);
 
   contextNext.fillStyle = '#000';
   contextNext.fillRect(0, 0, canvasNext.width, canvasNext.height);
+}
+
+
+function updateScoreTable(data){
+  clearScoreTable();
+  counter = 100;
+  data.forEach(value =>{
+    contextScore.font = "20px Arial";
+    contextScore.fillText(value.name.concat(" - ", value.score.toString()), 5, counter);
+    counter+=20;
+  });
+}
+
+function clearScoreTable(){
+  contextScore.fillStyle = '#000';
+  contextScore.fillRect(0, 0, canvasScore.width, canvasScore.height);
+  contextScore.fillStyle = 'white';
+  contextScore.font = "50px Arial";
+  contextScore.fillText("Score", 50, 50);
 }
 
 
@@ -88,5 +117,4 @@ function createShape(type){
               [0, 0, 0],];
     break;
   }
-
 }

@@ -4,11 +4,15 @@ body {
   font-family: sans-serif;
   font-size: 2em;
   text-align: center;
+
 }
 canvas {
   border: solid .2em #fff;
-  padding: 10 ;
   margin: auto;
+}
+
+table{
+  margin: 0px auto;
 }
 
 #tetris{
@@ -16,5 +20,9 @@ canvas {
 }
 
 #next{
-  transform: translateY(-35vh);
+    height: 29vh;
+}
+
+#scoreTable{
+      height: 58.5vh;
 }

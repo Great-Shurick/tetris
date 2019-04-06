@@ -8,8 +8,10 @@ player = {
 const pieces = 'ILJOTZS';
 const WIDTH = 12;
 const HIGHT = 20;
+const IO = io.connect();
 
 var arena = [];
+var record = [];
 
 let dropCounter = 0;
 let dropInterval = 1000-100*player.speed;
@@ -91,6 +93,7 @@ function playerReset(){
   player.pos.y = 0;
   player.pos.x = (arena[0].length/2|0) - (player.shape[0].length/2|0);
   if(collide(arena, player)){
+    IO.emit('gameOver',{name: gameOverDialog(), score: player.score});
     arena.forEach(row => row.fill(0));
     player.score = 0;
   }
@@ -168,7 +171,13 @@ function rotate(shape, dir){
   }
 }
 
-
+IO.on('newRecord', function(data){
+  record.push(data)
+  record.sort(function(a, b){return b.score-a.score});
+  while(record.length>5)
+    record.pop()
+  updateScoreTable(record)
+});
 
 
 init()
