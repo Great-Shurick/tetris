@@ -1,29 +1,36 @@
 console.log('Starting server');
 
-const fs = require('fs');
+const fs 				= require('fs');
+const sqlite3 	= require('sqlite3');
+const path 			= require('path');
+const http 			= require('http');
+const express 	= require('express');
+const io 				= require('socket.io');
 
-const path = require('path');
-const http = require('http');
-const express = require('express');
 
-const app = express();
-const directoryToServe = 'client';
-const port = 3443;
+const app 							= express();
+const port 							= 3443;
+const directoryToServe 	= 'client';
+
+var 	users 						= [];
+var 	connections 			= [];
+let 	dataBase 					= new sqlite3.Database('./info.db', (err)=>{
+														if (err){
+															return console.error(err.message);
+														}
+														console.log('Connected to the SQlite database.')
+													});
 
 app.use('/', express.static(path.join(__dirname, '..', directoryToServe)));
 
-const server = http.createServer(app);
-
-const io = require('socket.io').listen(server);
+const server 					= http.createServer(app);
+const server_listener = io.listen(server);
 
 server.listen(port, function(){
   console.log(`Server running on ${port}`)
 });
 
-users = [];
-connections = [];
-
-io.sockets.on('connection', function(socket){
+server_listener.sockets.on('connection', function(socket){
   connections.push(socket);
   console.log('Successfully connected to the server')
 
@@ -33,7 +40,7 @@ io.sockets.on('connection', function(socket){
   });
 
   socket.on('gameOver', function(data){
-    io.sockets.emit('newRecord', data)
+    server_listener.sockets.emit('newRecord', data)
   });
 
 });
