@@ -5,6 +5,7 @@ player = {
   next: null,
   speed: 0
 }
+
 const pieces = 'ILJOTZS';
 const WIDTH = 12;
 const HIGHT = 20;
@@ -23,6 +24,7 @@ function init(w = WIDTH, h = HIGHT){
   while(h--)
     arena.push(new Array(w).fill(0));
   player.next = createShape(pieces[pieces.length*Math.random() | 0]);
+  IO.emit('gameOver',{name: "init", score: "init"});
   playerReset();
   updateScore(player.score);
   update();
@@ -113,8 +115,6 @@ function playerDrop(){
 }
 
 
-
-
 function playerMove(side){
   if (side !== 0){
     player.pos.x += side;
@@ -172,10 +172,10 @@ function rotate(shape, dir){
 }
 
 IO.on('newRecord', function(data){
-  record.push(data)
-  record.sort(function(a, b){return b.score-a.score});
-  while(record.length>5)
+  data.forEach(value=>{record.push(value)})
+  while(record.length>20)
     record.pop()
+
   updateScoreTable(record)
 });
 

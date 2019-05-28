@@ -1,36 +1,38 @@
 console.log('Starting server');
 
-const fs 				= require('fs');
-const sqlite3 	= require('sqlite3');
-const path 			= require('path');
-const http 			= require('http');
-const express 	= require('express');
-const io 				= require('socket.io');
+out = null;
+
+const fs 		= require('fs');
+const sqlite3 		= require('sqlite3');
+const path 		= require('path');
+const http 		= require('http');
+const express 		= require('express');
+const io 		= require('socket.io');
 
 
-const app 							= express();
-const port 							= 3443;
+const app 		= express();
+const port 		= 3443;
 const directoryToServe 	= 'client';
 
-var 	users 						= [];
-var 	connections 			= [];
-let 	dataBase 					= new sqlite3.Database('./info.db', (err)=>{
-														if (err){
-															return console.error(err.message);
-														}
-														console.log('Connected to the SQlite database.')
-													});
+var 	users 		= [];
+var 	connections 	= [];
+let 	dataBase 	= new sqlite3.Database('./info.db', (err)=>{
+										if (err){
+												return console.error(err.message);
+											}
+										console.log('Connected to the SQlite database.')
+									});
 
 app.use('/', express.static(path.join(__dirname, '..', directoryToServe)));
 
-const server 					= http.createServer(app);
-const server_listener = io.listen(server);
+const server 	 	= http.createServer(app);
+const client 	= io.listen(server);
 
 server.listen(port, function(){
   console.log(`Server running on ${port}`)
 });
 
-server_listener.sockets.on('connection', function(socket){
+client.sockets.on('connection', function(socket){
   connections.push(socket);
   console.log('Successfully connected to the server')
 
@@ -40,7 +42,28 @@ server_listener.sockets.on('connection', function(socket){
   });
 
   socket.on('gameOver', function(data){
-    server_listener.sockets.emit('newRecord', data)
+		if(data.score !== "init" ){
+			dataBase.run(`INSERT INTO records(name, score) VALUES(?, ?)`, [data.name, data.score], function(err) {
+	    	if (err)
+	      	return console.log(err.message);
+	  	});
+		}
+		setTimeout(function(){
+			getTable(changeOut);
+			socket.emit('newRecord', 	out);
+		}, 200);
   });
 
 });
+
+function getTable(callback){
+	dataBase.all(`SELECT * FROM records ORDER BY score DESC`, [], (err, rows) => {
+		callback(rows);
+		if (err)
+			throw err;
+	});
+}
+
+function changeOut(out) {
+	this.out=out
+}

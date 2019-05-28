@@ -46,6 +46,7 @@ function clearCanvas(){
 
 
 function updateScoreTable(data){
+  console.log(data);
   clearScoreTable();
   counter = 100;
   data.forEach(value =>{
